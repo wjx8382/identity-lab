@@ -48,8 +48,14 @@ public class AuthService {
             throw new BusinessException("用户名或密码错误");
         }
 
-        String token =
-                jwtService.generateToken(user);
-        return new LoginReponse(token);
+        String accessToken =
+                jwtService.generateAccessToken(user);
+
+        String refreshToken =
+                jwtService.generateRefreshToken(user);
+        return new LoginReponse(
+                accessToken,
+                refreshToken
+        );
     }
 }

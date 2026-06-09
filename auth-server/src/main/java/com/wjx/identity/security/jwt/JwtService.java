@@ -17,8 +17,11 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.expiration}")
-    private long expiration;
+    @Value("${jwt.access-expiration}")
+    private long accessExpiration;
+
+    @Value("${jwt.refresh-expiration}")
+    private long refreshExpiration;
 
     private SecretKey secretKey;
 
@@ -27,7 +30,7 @@ public class JwtService {
         secretKey = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String generateToken(UserEntity user) {
+    public String generateAccessToken(UserEntity user) {
         return Jwts.builder()
                 .subject(user.getUsername())
                 .claim(
@@ -38,7 +41,22 @@ public class JwtService {
                 .expiration(
                         new Date(
                                 System.currentTimeMillis()
-                                        + expiration
+                                        + accessExpiration
+                        )
+                )
+                .signWith(secretKey)
+                .compact();
+    }
+
+    public String generateRefreshToken(UserEntity user) {
+        return Jwts.builder()
+                .subject(user.getUsername())
+                .claim("type", "refresh")
+                .issuedAt(new Date())
+                .expiration(
+                        new Date(
+                                System.currentTimeMillis()
+                                        + refreshExpiration
                         )
                 )
                 .signWith(secretKey)

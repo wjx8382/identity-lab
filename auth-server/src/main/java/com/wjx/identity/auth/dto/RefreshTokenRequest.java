@@ -1,7 +1,6 @@
 package com.wjx.identity.auth.dto;
 
-public record LoginReponse (
-        String accessToken,
+public record RefreshTokenRequest(
         String refreshToken
 ) {
 }
