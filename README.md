@@ -55,7 +55,7 @@ Identity & Access Management (IAM) Learning Project
 
 ### OAuth2 & OpenID Connect
 
-- [ ] OAuth2 Authorization Code Flow
+- [x] OAuth2 Authorization Code Flow
 - [ ] PKCE
 - [ ] OpenID Connect (OIDC)
 - [ ] UserInfo Endpoint

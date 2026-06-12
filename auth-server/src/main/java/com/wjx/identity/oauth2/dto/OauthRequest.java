@@ -1,0 +1,11 @@
+package com.wjx.identity.oauth2.dto;
+
+import org.springframework.web.bind.annotation.RequestParam;
+
+public record OauthRequest(
+        @RequestParam String client_id,
+        @RequestParam String redirect_uri,
+        @RequestParam String response_type,
+        @RequestParam(required = false) String state
+) {
+}
