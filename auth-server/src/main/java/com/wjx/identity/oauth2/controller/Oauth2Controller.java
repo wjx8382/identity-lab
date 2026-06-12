@@ -2,9 +2,10 @@ package com.wjx.identity.oauth2.controller;
 
 import com.wjx.identity.oauth2.dto.OAuth2TokenResponse;
 import com.wjx.identity.oauth2.dto.OauthRequest;
-import com.wjx.identity.auth.dto.TokenRequest;
+import com.wjx.identity.oauth2.dto.OAuthTokenRequest;
 import com.wjx.identity.common.exception.BusinessException;
 import com.wjx.identity.common.util.CodeGenerator;
+import com.wjx.identity.oauth2.service.PkceService;
 import com.wjx.identity.security.jwt.JwtService;
 import com.wjx.identity.user.entity.AuthorizationCodeEntity;
 import com.wjx.identity.user.entity.ClientEntity;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 
 @RestController
@@ -35,6 +37,8 @@ public class Oauth2Controller {
     private final UserRepository userRepository;
 
     private final JwtService jwtService;
+
+    private final PkceService pkceService;
 
     private final CodeGenerator codeGenerator;
 
@@ -78,6 +82,14 @@ public class Oauth2Controller {
                 authentication.getName()
         );
 
+        entity.setCodeChallenge(
+                oauthRequest.code_challenge()
+        );
+
+        entity.setCodeChallengeMethod(
+                oauthRequest.code_challenge_method()
+        );
+
         entity.setExpireAt(
                 LocalDateTime.now().plusMinutes(5)
         );
@@ -109,8 +121,8 @@ public class Oauth2Controller {
 
     @PostMapping("/token")
     public OAuth2TokenResponse token(
-            @RequestBody TokenRequest request
-    ) {
+            @RequestBody OAuthTokenRequest request
+    ) throws NoSuchAlgorithmException {
         ClientEntity client =
                 clientRepository
                         .findByClientId(
@@ -156,6 +168,20 @@ public class Oauth2Controller {
 
             throw new BusinessException(
                     "code已过期"
+            );
+        }
+
+        String challennge =
+                pkceService.generateChallenge(
+                        request.code_verifier()
+                );
+
+        if (!challennge.equals(
+                codeEntity.getCodeChallenge()
+        )) {
+
+            throw new BusinessException(
+                    "PKCE验证失败"
             );
         }
 

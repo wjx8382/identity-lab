@@ -6,6 +6,8 @@ public record OauthRequest(
         @RequestParam String client_id,
         @RequestParam String redirect_uri,
         @RequestParam String response_type,
-        @RequestParam(required = false) String state
+        @RequestParam(required = false) String state,
+        @RequestParam String code_challenge,
+        @RequestParam String code_challenge_method
 ) {
 }

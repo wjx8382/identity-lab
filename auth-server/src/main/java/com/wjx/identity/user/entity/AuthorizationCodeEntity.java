@@ -22,6 +22,10 @@ public class AuthorizationCodeEntity {
 
     private String clientId;
 
+    private String codeChallenge;
+
+    private String codeChallengeMethod;
+
     private LocalDateTime expireAt;
 
     private Boolean used;
