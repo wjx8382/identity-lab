@@ -1,10 +1,12 @@
 package com.wjx.identity.security.jwt;
 
+import com.wjx.identity.security.config.KeyPairProvider;
 import com.wjx.identity.user.entity.UserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,7 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
     
     @Value("${jwt.secret}")
@@ -27,6 +30,8 @@ public class JwtService {
     private String issuer;
 
     private SecretKey secretKey;
+
+    private final KeyPairProvider keyPairProvider;
 
     @PostConstruct
     public void init() {
@@ -49,7 +54,11 @@ public class JwtService {
                                         + accessExpiration
                         )
                 )
-                .signWith(secretKey)
+//                .signWith(secretKey)
+                .signWith(
+                        keyPairProvider.getPrivateKey(),
+                        Jwts.SIG.RS256
+                )
                 .compact();
     }
 
@@ -73,7 +82,11 @@ public class JwtService {
                                         + accessExpiration
                         )
                 )
-                .signWith(secretKey)
+//                .signWith(secretKey)
+                .signWith(
+                        keyPairProvider.getPrivateKey(),
+                        Jwts.SIG.RS256
+                )
                 .compact();
     }
 
@@ -88,7 +101,11 @@ public class JwtService {
                                         + refreshExpiration
                         )
                 )
-                .signWith(secretKey)
+//                .signWith(secretKey)
+                .signWith(
+                        keyPairProvider.getPrivateKey(),
+                        Jwts.SIG.RS256
+                )
                 .compact();
     }
 
@@ -121,7 +138,11 @@ public class JwtService {
                                         + accessExpiration
                         )
                 )
-                .signWith(secretKey)
+//                .signWith(secretKey)
+                .signWith(
+                        keyPairProvider.getPrivateKey(),
+                        Jwts.SIG.RS256
+                )
                 .compact();
     }
 
@@ -140,7 +161,9 @@ public class JwtService {
 
     private Claims getClaims(String token) {
         return Jwts.parser()
-                .verifyWith(secretKey)
+                .verifyWith(
+                        keyPairProvider.getPublicKey()
+                )
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();

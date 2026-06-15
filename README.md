@@ -83,9 +83,9 @@ The goal is to gradually evolve this project from a simple JWT authentication sy
 
 * [x] ID Token
 * [x] UserInfo Endpoint
-* [ ] OpenID Scope Validation
-* [ ] OIDC Discovery Endpoint
-* [ ] JWKS Endpoint
+* [x] OpenID Scope Validation
+* [x] OIDC Discovery Endpoint
+* [x] JWKS Endpoint
 
 ### FAPI
 
