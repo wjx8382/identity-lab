@@ -57,7 +57,9 @@ public class Oauth2Controller {
             );
         }
 
-        if (oauthRequest.code_challenge() == null) {
+        if (oauthRequest.code_challenge() == null
+                || oauthRequest.code_challenge_method().isBlank()
+        ) {
             throw new BusinessException(
                     "PKCE required"
             );

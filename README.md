@@ -77,7 +77,7 @@ The goal is to gradually evolve this project from a simple JWT authentication sy
 * [x] Code Verifier
 * [x] Code Challenge
 * [x] S256 Support
-* [ ] PKCE Enforcement
+* [x] PKCE Enforcement
 
 ### OpenID Connect
 
