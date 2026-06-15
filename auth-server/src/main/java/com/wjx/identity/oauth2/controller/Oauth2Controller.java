@@ -26,6 +26,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/oauth2")
@@ -56,6 +57,20 @@ public class Oauth2Controller {
             );
         }
 
+        if (oauthRequest.code_challenge() == null) {
+            throw new BusinessException(
+                    "PKCE required"
+            );
+        }
+
+        if (!"S256".equals(
+                oauthRequest.code_challenge_method()
+        )) {
+            throw new BusinessException(
+                    "Only S256 supported"
+            );
+        }
+
         ClientEntity client =
                 clientRepository
                         .findByClientId(oauthRequest.client_id())
@@ -69,6 +84,11 @@ public class Oauth2Controller {
                     "redirect_uri不匹配"
             );
         }
+
+        validateScope(
+                oauthRequest.scope(),
+                client.getScope()
+        );
 
         String code = codeGenerator.generateCode();
 
@@ -216,7 +236,10 @@ public class Oauth2Controller {
                 .contains("openid")) {
 
             idToken =
-                    jwtService.generateIdToken(user);
+                    jwtService.generateIdToken(
+                            user,
+                            client.getClientId()
+                    );
         }
 
         codeEntity.setUsed(true);
@@ -266,5 +289,30 @@ public class Oauth2Controller {
                 username,
                 user.getEmail()
         );
+    }
+
+    private void validateScope(
+            String requestedScope,
+            String clientScope
+    ) {
+
+        Set<String> requested =
+                Set.of(
+                        requestedScope.split("\\s+")
+                );
+
+        Set<String> allowed =
+                Set.of(
+                        clientScope.split("\\s+")
+                );
+
+        if (!allowed.containsAll(
+                requested
+        )) {
+
+            throw new BusinessException(
+                    "scope not allowed"
+            );
+        }
     }
 }

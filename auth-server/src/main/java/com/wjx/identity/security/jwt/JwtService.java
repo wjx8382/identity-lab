@@ -23,6 +23,9 @@ public class JwtService {
     @Value("${jwt.refresh-expiration}")
     private long refreshExpiration;
 
+    @Value("${identity.issuer}")
+    private String issuer;
+
     private SecretKey secretKey;
 
     @PostConstruct
@@ -89,7 +92,10 @@ public class JwtService {
                 .compact();
     }
 
-    public String generateIdToken(UserEntity user) {
+    public String generateIdToken(
+            UserEntity user,
+            String clientId
+    ) {
         return Jwts.builder()
                 .subject(user.getUsername())
                 .claim(
@@ -99,6 +105,14 @@ public class JwtService {
                 .claim(
                         "name",
                         user.getUsername()
+                )
+                .claim(
+                        "iss",
+                        issuer
+                )
+                .claim(
+                        "aud",
+                        clientId
                 )
                 .issuedAt(new Date())
                 .expiration(
