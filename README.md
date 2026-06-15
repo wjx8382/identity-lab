@@ -36,10 +36,15 @@ The goal is to gradually evolve this project from a simple JWT authentication sy
 
 * OAuth2 Authorization Code Flow
 * PKCE (RFC 7636)
+* Pushed Authorization Requests (PAR)
+* OpenID Connect (OIDC)
 * ID Token
 * UserInfo Endpoint
-* Refresh Token Rotation (Basic)
+* OIDC Discovery Endpoint
+* JWKS Endpoint
+* RS256 JWT Signing
 * Scope-based Authorization
+* Refresh Token Rotation (Basic)
 
 ## Roadmap
 
@@ -86,13 +91,15 @@ The goal is to gradually evolve this project from a simple JWT authentication sy
 * [x] OpenID Scope Validation
 * [x] OIDC Discovery Endpoint
 * [x] JWKS Endpoint
+* [x] RS256 Signing
+* [x] Issuer (iss)
+* [x] Audience (aud)
 
 ### FAPI
 
 * [ ] FAPI Baseline
-* [ ] Issuer Validation
-* [ ] Audience Validation
-* [ ] PAR (Pushed Authorization Requests)
+* [x] PKCE Enforcement
+* [x] PAR (Pushed Authorization Requests)
 * [ ] JARM
 * [ ] MTLS
 
