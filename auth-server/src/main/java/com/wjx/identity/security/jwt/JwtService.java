@@ -169,6 +169,10 @@ public class JwtService {
                 .getPayload();
     }
 
+    public Claims parseClaims(String token) {
+        return getClaims(token);
+    }
+
     public String extractRole(String token) {
         return getClaims(token)
                 .get("role", String.class);

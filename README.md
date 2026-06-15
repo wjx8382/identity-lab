@@ -43,6 +43,7 @@ The goal is to gradually evolve this project from a simple JWT authentication sy
 * OIDC Discovery Endpoint
 * JWKS Endpoint
 * RS256 JWT Signing
+* Token Introspection
 * Scope-based Authorization
 * Refresh Token Rotation (Basic)
 
@@ -76,6 +77,8 @@ The goal is to gradually evolve this project from a simple JWT authentication sy
 * [x] Authorization Code Persistence
 * [x] Access Token Issuance
 * [x] Refresh Token Issuance
+* [x] Token Introspection
+* [ ] Token Revocation
 
 ### PKCE
 
@@ -97,7 +100,6 @@ The goal is to gradually evolve this project from a simple JWT authentication sy
 
 ### FAPI
 
-* [ ] FAPI Baseline
 * [x] PKCE Enforcement
 * [x] PAR (Pushed Authorization Requests)
 * [ ] JARM
@@ -111,9 +113,7 @@ Build a mini identity platform from scratch and gradually evolve it into an OAut
 
 * OAuth 2.1
 * Dynamic Client Registration
-* Token Introspection
 * Token Revocation
-* OIDC Discovery
-* JWKS Endpoint
-* FAPI Baseline Compliance
+* JARM
+* MTLS
 * Spring Authorization Server Migration

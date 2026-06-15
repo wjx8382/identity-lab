@@ -39,6 +39,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**")
                         .hasRole("ADMIN")
 
+                        .requestMatchers("/oauth2/introspect")
+                        .authenticated()
+
                         .anyRequest().authenticated()
                 )
 

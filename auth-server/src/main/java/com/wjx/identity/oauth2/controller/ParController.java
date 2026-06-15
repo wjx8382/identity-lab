@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/oauth2/par")
+@RequestMapping("/oauth2")
 @RequiredArgsConstructor
 public class ParController {
 
@@ -29,7 +29,7 @@ public class ParController {
 
     private final ScopeValidator scopeValidator;
 
-    @PostMapping
+    @PostMapping("/par")
     public ParResponse par(
             @RequestBody ParRequest request
     ) {
