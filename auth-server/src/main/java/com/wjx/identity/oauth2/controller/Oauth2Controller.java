@@ -6,10 +6,13 @@ import com.wjx.identity.oauth2.dto.OAuthTokenRequest;
 import com.wjx.identity.common.exception.BusinessException;
 import com.wjx.identity.common.util.CodeGenerator;
 import com.wjx.identity.oauth2.dto.UserInfoResponse;
+import com.wjx.identity.oauth2.repository.ParRequestRepository;
 import com.wjx.identity.oauth2.service.PkceService;
+import com.wjx.identity.oauth2.service.ScopeValidator;
 import com.wjx.identity.security.jwt.JwtService;
 import com.wjx.identity.user.entity.AuthorizationCodeEntity;
 import com.wjx.identity.user.entity.ClientEntity;
+import com.wjx.identity.user.entity.ParRequestEntity;
 import com.wjx.identity.user.entity.UserEntity;
 import com.wjx.identity.user.repository.AuthorizeCodeRepository;
 import com.wjx.identity.user.repository.ClientRepository;
@@ -26,7 +29,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/oauth2")
@@ -45,52 +47,49 @@ public class Oauth2Controller {
 
     private final CodeGenerator codeGenerator;
 
+    private final ScopeValidator scopeValidator;
+
+    private final ParRequestRepository parRequestRepository;
+
     @GetMapping("/authorize")
     public ResponseEntity<Void> authorize(
             @ModelAttribute OauthRequest oauthRequest,
             Authentication authentication
     ) {
 
-        if (authentication ==  null) {
-            throw new BusinessException(
-                    "未登录"
-            );
-        }
-
-        if (oauthRequest.code_challenge() == null
-                || oauthRequest.code_challenge_method().isBlank()
-        ) {
-            throw new BusinessException(
-                    "PKCE required"
-            );
-        }
-
-        if (!"S256".equals(
-                oauthRequest.code_challenge_method()
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || "anonymousUser".equals(
+                authentication.getPrincipal()
         )) {
             throw new BusinessException(
-                    "Only S256 supported"
+                    "Authentication required"
             );
         }
 
-        ClientEntity client =
-                clientRepository
-                        .findByClientId(oauthRequest.client_id())
-                        .orElseThrow(
-                                () -> new BusinessException("Client不存在")
-                        );
+        if (oauthRequest.request_uri() == null
+                || oauthRequest.request_uri().isBlank()
+        ) {
 
-        if (!client.getRedirectUri()
-                .equals(oauthRequest.redirect_uri())) {
             throw new BusinessException(
-                    "redirect_uri不匹配"
+                    "request_uri required"
             );
         }
 
-        validateScope(
-                oauthRequest.scope(),
-                client.getScope()
-        );
+        ParRequestEntity parRequest =
+                parRequestRepository.findByRequestId(
+                        oauthRequest.request_uri()
+                )
+                .orElseThrow(
+                        () -> new BusinessException("PAR request not found")
+                );
+
+        if (parRequest.getExpireAt()
+                .isBefore(LocalDateTime.now()))  {
+            throw new BusinessException(
+                    "PAR request has expired"
+            );
+        }
 
         String code = codeGenerator.generateCode();
 
@@ -99,7 +98,7 @@ public class Oauth2Controller {
         entity.setCode(code);
 
         entity.setClientId(
-                oauthRequest.client_id()
+                parRequest.getClientId()
         );
 
         entity.setUsername(
@@ -107,15 +106,15 @@ public class Oauth2Controller {
         );
 
         entity.setScope(
-                oauthRequest.scope()
+                parRequest.getScope()
         );
 
         entity.setCodeChallenge(
-                oauthRequest.code_challenge()
+                parRequest.getCodeChallenge()
         );
 
         entity.setCodeChallengeMethod(
-                oauthRequest.code_challenge_method()
+                parRequest.getCodeChallengeMethod()
         );
 
         entity.setExpireAt(
@@ -126,16 +125,18 @@ public class Oauth2Controller {
 
         authorizeCodeRepository.save(entity);
 
+        parRequestRepository.delete(parRequest);
+
         String location =
-                oauthRequest.redirect_uri()
+                parRequest.getRedirectUri()
                         + "?code="
                         + code;
 
-        if (oauthRequest.state() != null) {
+        if (parRequest.getState() != null) {
 
             location += "&state="
                     + URLEncoder.encode(
-                            oauthRequest.state(),
+                            parRequest.getState(),
                             StandardCharsets.UTF_8
             );
         }
@@ -158,7 +159,7 @@ public class Oauth2Controller {
                         )
                         .orElseThrow(
                                 () -> new BusinessException(
-                                        "Client不存在"
+                                        "Client not found"
                                 )
                         );
 
@@ -166,7 +167,7 @@ public class Oauth2Controller {
                 .equals(request.client_secret())) {
 
             throw new BusinessException(
-                    "client_secret错误"
+                    "Invalid client secret"
             );
         }
 
@@ -177,7 +178,7 @@ public class Oauth2Controller {
                         )
                         .orElseThrow(
                                 () -> new BusinessException(
-                                        "code不存在"
+                                        "code not found"
                                 )
                         );
 
@@ -185,7 +186,7 @@ public class Oauth2Controller {
                 codeEntity.getUsed()
         )) {
             throw new BusinessException(
-                    "code已使用"
+                    "code has used"
             );
         }
 
@@ -195,7 +196,7 @@ public class Oauth2Controller {
                 )) {
 
             throw new BusinessException(
-                    "code已过期"
+                    "code has expired"
             );
         }
 
@@ -209,7 +210,7 @@ public class Oauth2Controller {
         )) {
 
             throw new BusinessException(
-                    "PKCE验证失败"
+                    "PKCE verification failed"
             );
         }
 
@@ -220,7 +221,7 @@ public class Oauth2Controller {
                         )
                         .orElseThrow(
                                 () -> new BusinessException(
-                                        "用户不存在"
+                                        "User not found"
                                 )
                         );
 
@@ -291,30 +292,5 @@ public class Oauth2Controller {
                 username,
                 user.getEmail()
         );
-    }
-
-    private void validateScope(
-            String requestedScope,
-            String clientScope
-    ) {
-
-        Set<String> requested =
-                Set.of(
-                        requestedScope.split("\\s+")
-                );
-
-        Set<String> allowed =
-                Set.of(
-                        clientScope.split("\\s+")
-                );
-
-        if (!allowed.containsAll(
-                requested
-        )) {
-
-            throw new BusinessException(
-                    "scope not allowed"
-            );
-        }
     }
 }

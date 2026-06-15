@@ -16,14 +16,10 @@ public class DataInitializer
     @Override
     public void run(String... args) {
 
-        if (clientRepository
-                .findByClientId("web-client")
-                .isPresent()) {
-            return;
-        }
-
         ClientEntity client =
-                new ClientEntity();
+                clientRepository
+                        .findByClientId("web-client")
+                        .orElseGet(ClientEntity::new);
 
         client.setClientId("web-client");
         client.setClientSecret("123456");
