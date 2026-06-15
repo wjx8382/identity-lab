@@ -5,6 +5,7 @@ import com.wjx.identity.oauth2.dto.OauthRequest;
 import com.wjx.identity.oauth2.dto.OAuthTokenRequest;
 import com.wjx.identity.common.exception.BusinessException;
 import com.wjx.identity.common.util.CodeGenerator;
+import com.wjx.identity.oauth2.dto.UserInfoResponse;
 import com.wjx.identity.oauth2.service.PkceService;
 import com.wjx.identity.security.jwt.JwtService;
 import com.wjx.identity.user.entity.AuthorizationCodeEntity;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URLEncoder;
@@ -80,6 +82,10 @@ public class Oauth2Controller {
 
         entity.setUsername(
                 authentication.getName()
+        );
+
+        entity.setScope(
+                oauthRequest.scope()
         );
 
         entity.setCodeChallenge(
@@ -197,10 +203,21 @@ public class Oauth2Controller {
                         );
 
         String accessToken =
-                jwtService.generateAccessToken(user);
+                jwtService.generateAccessToken(
+                        user,
+                        codeEntity.getScope()
+                );
 
         String refreshToken =
                 jwtService.generateRefreshToken(user);
+
+        String idToken = null;
+        if (codeEntity.getScope()
+                .contains("openid")) {
+
+            idToken =
+                    jwtService.generateIdToken(user);
+        }
 
         codeEntity.setUsed(true);
 
@@ -209,8 +226,45 @@ public class Oauth2Controller {
         return new OAuth2TokenResponse(
                 accessToken,
                 refreshToken,
+                idToken,
                 "Bearer",
                 900L
+        );
+    }
+
+    @GetMapping("/userinfo")
+    public UserInfoResponse userinfo() {
+
+        Authentication authentication =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication();
+
+        String token =
+                (String) authentication.getDetails();
+
+        String scope =
+                jwtService.extractScope(token);
+
+        if (scope == null
+                || !scope.contains("openid")) {
+
+            throw new BusinessException(
+                    "openid scope required"
+            );
+        }
+
+        String username = authentication.getName();
+
+        UserEntity user =
+                userRepository
+                        .findByUsername(username)
+                        .orElseThrow();
+
+        return new UserInfoResponse(
+                username,
+                username,
+                user.getEmail()
         );
     }
 }

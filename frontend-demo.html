@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>Demo</title>
+</head>
+<body>
+<h2>Identity Lab OIDC Demo</h2>
+<button onclick="parseIdToken()">
+    解析 ID Token
+</button>
+<br><br>
+<textarea id="token"
+          rows="10"
+          cols="120"
+placeholder="把 id_token粘贴到这里"></textarea>
+<pre id="result"></pre>
+<script>
+    function parseIdToken() {
+        const token = document.getElementById("token").value;
+        const payload = token.split(".")[1];
+        const decoded = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+        document.getElementById("result").innerText = JSON.stringify(decoded, null, 2);
+    }
+</script>
+</body>
+</html>

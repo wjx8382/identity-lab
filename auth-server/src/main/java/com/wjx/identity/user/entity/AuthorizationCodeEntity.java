@@ -22,6 +22,8 @@ public class AuthorizationCodeEntity {
 
     private String clientId;
 
+    private String scope;
+
     private String codeChallenge;
 
     private String codeChallengeMethod;

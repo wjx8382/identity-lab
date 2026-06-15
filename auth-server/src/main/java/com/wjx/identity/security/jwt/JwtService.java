@@ -31,12 +31,38 @@ public class JwtService {
     }
 
     public String generateAccessToken(UserEntity user) {
+
         return Jwts.builder()
                 .subject(user.getUsername())
                 .claim(
                         "role",
                         user.getRole().getRoleName()
                 )
+                .claim("token_type", "login")
+                .issuedAt(new Date())
+                .expiration(
+                        new Date(
+                                System.currentTimeMillis()
+                                        + accessExpiration
+                        )
+                )
+                .signWith(secretKey)
+                .compact();
+    }
+
+    public String generateAccessToken(
+            UserEntity user,
+            String scope
+    ) {
+
+        return Jwts.builder()
+                .subject(user.getUsername())
+                .claim(
+                        "role",
+                        user.getRole().getRoleName()
+                )
+                .claim("token_type", "oauth2")
+                .claim("scope", scope)
                 .issuedAt(new Date())
                 .expiration(
                         new Date(
@@ -57,6 +83,28 @@ public class JwtService {
                         new Date(
                                 System.currentTimeMillis()
                                         + refreshExpiration
+                        )
+                )
+                .signWith(secretKey)
+                .compact();
+    }
+
+    public String generateIdToken(UserEntity user) {
+        return Jwts.builder()
+                .subject(user.getUsername())
+                .claim(
+                        "email",
+                        user.getEmail()
+                )
+                .claim(
+                        "name",
+                        user.getUsername()
+                )
+                .issuedAt(new Date())
+                .expiration(
+                        new Date(
+                                System.currentTimeMillis()
+                                        + accessExpiration
                         )
                 )
                 .signWith(secretKey)
@@ -87,5 +135,10 @@ public class JwtService {
     public String extractRole(String token) {
         return getClaims(token)
                 .get("role", String.class);
+    }
+
+    public String extractScope(String token) {
+        return getClaims(token)
+                .get("scope", String.class);
     }
 }

@@ -57,9 +57,9 @@ Identity & Access Management (IAM) Learning Project
 
 - [x] OAuth2 Authorization Code Flow
 - [x] PKCE
-- [ ] OpenID Connect (OIDC)
-- [ ] UserInfo Endpoint
-- [ ] ID Token
+- [x] OpenID Connect (OIDC)
+- [x] UserInfo Endpoint
+- [x] ID Token
 
 ### FAPI
 
