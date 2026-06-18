@@ -4,7 +4,9 @@ import com.wjx.identity.auth.dto.*;
 import com.wjx.identity.auth.service.AuthService;
 import com.wjx.identity.common.exception.BusinessException;
 import com.wjx.identity.security.jwt.JwtService;
+import com.wjx.identity.user.entity.RefreshTokenEntity;
 import com.wjx.identity.user.entity.UserEntity;
+import com.wjx.identity.user.repository.RefreshTokenRepository;
 import com.wjx.identity.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,8 @@ public class AuthController {
     private final JwtService jwtService;
 
     private final UserRepository userRepository;
+
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @PostMapping("/register")
     public void register(@RequestBody RegisterRequest request) {
@@ -41,9 +45,25 @@ public class AuthController {
     ) {
         String refreshToken = request.refreshToken();
 
+        RefreshTokenEntity refreshTokenEntity =
+                refreshTokenRepository
+                        .findByToken(refreshToken)
+                        .orElseThrow(
+                                () -> new BusinessException(
+                                        "Token not found"
+                                )
+                        );
+
+        if (refreshTokenEntity.getRevoked()) {
+
+            throw new BusinessException(
+                    "Token revoked"
+            );
+        }
+
         if (!jwtService.validateToken(refreshToken)) {
             throw new BusinessException(
-                    "Refresh Token无效"
+                    "Invalid refresh token"
             );
         }
 

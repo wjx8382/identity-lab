@@ -9,7 +9,6 @@ import com.wjx.identity.user.entity.ClientEntity;
 import com.wjx.identity.user.entity.ParRequestEntity;
 import com.wjx.identity.user.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

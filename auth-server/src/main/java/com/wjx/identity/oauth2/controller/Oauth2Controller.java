@@ -10,12 +10,10 @@ import com.wjx.identity.oauth2.repository.ParRequestRepository;
 import com.wjx.identity.oauth2.service.PkceService;
 import com.wjx.identity.oauth2.service.ScopeValidator;
 import com.wjx.identity.security.jwt.JwtService;
-import com.wjx.identity.user.entity.AuthorizationCodeEntity;
-import com.wjx.identity.user.entity.ClientEntity;
-import com.wjx.identity.user.entity.ParRequestEntity;
-import com.wjx.identity.user.entity.UserEntity;
+import com.wjx.identity.user.entity.*;
 import com.wjx.identity.user.repository.AuthorizeCodeRepository;
 import com.wjx.identity.user.repository.ClientRepository;
+import com.wjx.identity.user.repository.RefreshTokenRepository;
 import com.wjx.identity.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -50,6 +48,8 @@ public class Oauth2Controller {
     private final ScopeValidator scopeValidator;
 
     private final ParRequestRepository parRequestRepository;
+
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @GetMapping("/authorize")
     public ResponseEntity<Void> authorize(
@@ -233,6 +233,19 @@ public class Oauth2Controller {
 
         String refreshToken =
                 jwtService.generateRefreshToken(user);
+
+        RefreshTokenEntity refreshTokenEntity =
+                new RefreshTokenEntity();
+
+        refreshTokenEntity.setToken(refreshToken);
+        refreshTokenEntity.setUsername(user.getUsername());
+        refreshTokenEntity.setClientId(codeEntity.getClientId());
+        refreshTokenEntity.setExpireAt(
+                LocalDateTime.now().plusDays(7)
+        );
+        refreshTokenEntity.setRevoked(false);
+
+        refreshTokenRepository.save(refreshTokenEntity);
 
         String idToken = null;
         if (codeEntity.getScope()

@@ -44,6 +44,7 @@ The goal is to gradually evolve this project from a simple JWT authentication sy
 * JWKS Endpoint
 * RS256 JWT Signing
 * Token Introspection
+* Token Revocation
 * Scope-based Authorization
 * Refresh Token Rotation (Basic)
 
@@ -78,7 +79,7 @@ The goal is to gradually evolve this project from a simple JWT authentication sy
 * [x] Access Token Issuance
 * [x] Refresh Token Issuance
 * [x] Token Introspection
-* [ ] Token Revocation
+* [x] Token Revocation
 
 ### PKCE
 
@@ -113,7 +114,6 @@ Build a mini identity platform from scratch and gradually evolve it into an OAut
 
 * OAuth 2.1
 * Dynamic Client Registration
-* Token Revocation
 * JARM
 * MTLS
 * Spring Authorization Server Migration
