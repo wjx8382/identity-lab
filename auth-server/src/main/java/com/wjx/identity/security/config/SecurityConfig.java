@@ -33,7 +33,8 @@ public class SecurityConfig {
                                 "/api/auth/**",
                                 "/oauth2/par",
                                 "/oauth2/token",
-                                "/.well-known/**"
+                                "/.well-known/**",
+                                "/mtls/test"
                         ).permitAll()
 
                         .requestMatchers("/api/admin/**")

@@ -1,20 +1,3 @@
-# Identity Lab
-
-Identity & Access Management (IAM) Learning Project
-
-A hands-on project for learning and implementing modern identity protocols and authorization standards, including JWT, OAuth 2.0, OpenID Connect (OIDC), and FAPI.
-
-The goal is to gradually evolve this project from a simple JWT authentication system into a standards-compliant Authorization Server.
-
-## Tech Stack
-
-* Java 21
-* Spring Boot 3
-* Spring Security 6
-* PostgreSQL
-* Spring Data JPA
-* JWT (JJWT)
-
 ## Features
 
 ### Authentication
@@ -37,6 +20,7 @@ The goal is to gradually evolve this project from a simple JWT authentication sy
 * OAuth2 Authorization Code Flow
 * PKCE (RFC 7636)
 * Pushed Authorization Requests (PAR)
+* JWT Secured Authorization Response Mode (JARM)
 * OpenID Connect (OIDC)
 * ID Token
 * UserInfo Endpoint
@@ -47,6 +31,13 @@ The goal is to gradually evolve this project from a simple JWT authentication sy
 * Token Revocation
 * Scope-based Authorization
 * Refresh Token Rotation (Basic)
+
+### FAPI
+
+* PKCE Enforcement
+* Pushed Authorization Requests (PAR)
+* JWT Secured Authorization Response Mode (JARM)
+* Mutual TLS (mTLS) Proof of Concept
 
 ## Roadmap
 
@@ -104,15 +95,16 @@ The goal is to gradually evolve this project from a simple JWT authentication sy
 * [x] PKCE Enforcement
 * [x] PAR (Pushed Authorization Requests)
 * [x] JARM
-* [ ] MTLS
-
-## Learning Goal
-
-Build a mini identity platform from scratch and gradually evolve it into an OAuth2 / OIDC / FAPI compliant Authorization Server.
+* [x] MTLS Proof of Concept
+* [ ] MTLS Client Authentication
 
 ## Future Work
 
 * OAuth 2.1
 * Dynamic Client Registration
-* MTLS
+* MTLS Client Authentication
+* DPoP (Demonstration of Proof-of-Possession)
 * Spring Authorization Server Migration
+
+```
+```
