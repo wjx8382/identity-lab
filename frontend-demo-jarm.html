@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>JARM Demo</title>
+</head>
+<body>
+
+<h2>Identity Lab JARM Demo</h2>
+
+<p>把 callback URL 里的 response 参数粘贴到这里：</p>
+
+<textarea id="jarm"
+          rows="8"
+          cols="120"></textarea>
+
+<br><br>
+
+<button onclick="parseJarm()">解析 JARM Response</button>
+
+<h3>Parsed JARM Claims</h3>
+<pre id="result"></pre>
+
+<h3>Authorization Code</h3>
+<input id="code" size="80" readonly>
+
+<script>
+    function base64UrlDecode(input) {
+        input = input.replace(/-/g, '+').replace(/_/g, '/');
+
+        const pad = input.length % 4;
+        if (pad) {
+            input += '='.repeat(4 - pad);
+        }
+
+        return decodeURIComponent(
+            atob(input)
+                .split('')
+                .map(function (c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                })
+                .join('')
+        );
+    }
+
+    function parseJarm() {
+        const token = document.getElementById('jarm').value.trim();
+
+        if (!token) {
+            alert('Please paste JARM response JWT.');
+            return;
+        }
+
+        const parts = token.split('.');
+
+        if (parts.length !== 3) {
+            alert('Invalid JWT format.');
+            return;
+        }
+
+        const payload = JSON.parse(base64UrlDecode(parts[1]));
+
+        document.getElementById('result').innerText =
+            JSON.stringify(payload, null, 2);
+
+        document.getElementById('code').value =
+            payload.code || "";
+    }
+</script>
+</body>
+</html>

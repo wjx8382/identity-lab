@@ -103,7 +103,7 @@ The goal is to gradually evolve this project from a simple JWT authentication sy
 
 * [x] PKCE Enforcement
 * [x] PAR (Pushed Authorization Requests)
-* [ ] JARM
+* [x] JARM
 * [ ] MTLS
 
 ## Learning Goal
@@ -114,6 +114,5 @@ Build a mini identity platform from scratch and gradually evolve it into an OAut
 
 * OAuth 2.1
 * Dynamic Client Registration
-* JARM
 * MTLS
 * Spring Authorization Server Migration

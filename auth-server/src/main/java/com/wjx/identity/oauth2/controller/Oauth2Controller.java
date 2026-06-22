@@ -127,10 +127,19 @@ public class Oauth2Controller {
 
         parRequestRepository.delete(parRequest);
 
+        String response = jwtService.generateJarmResponse(
+                code,
+                parRequest.getState(),
+                parRequest.getClientId()
+        );
+
         String location =
                 parRequest.getRedirectUri()
-                        + "?code="
-                        + code;
+                        + "?response="
+                        + URLEncoder.encode(
+                                response,
+                                StandardCharsets.UTF_8
+                        );
 
         if (parRequest.getState() != null) {
 

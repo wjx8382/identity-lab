@@ -26,6 +26,9 @@ public class JwtService {
     @Value("${jwt.refresh-expiration}")
     private long refreshExpiration;
 
+    @Value("${jwt.jarm-expiration}")
+    private long jarmExpiration;
+
     @Value("${identity.issuer}")
     private String issuer;
 
@@ -181,5 +184,26 @@ public class JwtService {
     public String extractScope(String token) {
         return getClaims(token)
                 .get("scope", String.class);
+    }
+
+    public String generateJarmResponse(
+            String code,
+            String state,
+            String clientId
+    ) {
+        return Jwts.builder()
+                .issuer(issuer)
+                .audience()
+                .add(clientId)
+                .and()
+                .claim("code", code)
+                .claim("state", state)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + jarmExpiration))
+                .signWith(
+                        keyPairProvider.getPrivateKey(),
+                        Jwts.SIG.RS256
+                )
+                .compact();
     }
 }
