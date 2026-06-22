@@ -21,4 +21,6 @@ public class ClientEntity {
     private String redirectUri;
 
     private String scope;
+
+    private String certificateSubject;
 }

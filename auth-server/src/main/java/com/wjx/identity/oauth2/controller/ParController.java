@@ -5,9 +5,11 @@ import com.wjx.identity.oauth2.dto.ParRequest;
 import com.wjx.identity.oauth2.dto.ParResponse;
 import com.wjx.identity.oauth2.repository.ParRequestRepository;
 import com.wjx.identity.oauth2.service.ScopeValidator;
+import com.wjx.identity.security.util.CertificateUtils;
 import com.wjx.identity.user.entity.ClientEntity;
 import com.wjx.identity.user.entity.ParRequestEntity;
 import com.wjx.identity.user.repository.ClientRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,15 +32,35 @@ public class ParController {
 
     @PostMapping("/par")
     public ParResponse par(
-            @RequestBody ParRequest request
+            @RequestBody ParRequest request,
+            HttpServletRequest httpRequest
     ) {
 
-        ClientEntity client =
-                clientRepository.findByClientId(
-                        request.client_id()
-                ).orElseThrow(
-                        () -> new BusinessException("Client not found")
+        String certificateSubject =
+                CertificateUtils.getClientCertificateSubject(
+                        httpRequest
                 );
+
+        if (certificateSubject == null) {
+            throw new BusinessException(
+                    "Client certificate required"
+            );
+        }
+
+        ClientEntity client =
+                clientRepository.findByCertificateSubject(
+                        certificateSubject
+                ).orElseThrow(
+                        () -> new BusinessException(
+                                "Client certificate not trusted"
+                        )
+                );
+
+        if (!client.getClientId()
+                .equals(request.client_id())
+        ) {
+            throw new BusinessException("Client ID mismatch");
+        }
 
         if (!client.getRedirectUri()
                 .equals(request.redirect_uri()

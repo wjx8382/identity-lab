@@ -38,6 +38,7 @@
 * Pushed Authorization Requests (PAR)
 * JWT Secured Authorization Response Mode (JARM)
 * Mutual TLS (mTLS) Proof of Concept
+* Mutual TLS (mTLS) Client Authentication
 
 ## Roadmap
 
@@ -96,13 +97,12 @@
 * [x] PAR (Pushed Authorization Requests)
 * [x] JARM
 * [x] MTLS Proof of Concept
-* [ ] MTLS Client Authentication
+* [x] MTLS Client Authentication
 
 ## Future Work
 
 * OAuth 2.1
 * Dynamic Client Registration
-* MTLS Client Authentication
 * DPoP (Demonstration of Proof-of-Possession)
 * Spring Authorization Server Migration
 

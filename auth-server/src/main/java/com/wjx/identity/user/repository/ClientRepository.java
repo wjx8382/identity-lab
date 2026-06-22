@@ -13,4 +13,8 @@ public interface ClientRepository
     Optional<ClientEntity> findByClientId(
             String clientId
     );
+
+    Optional<ClientEntity> findByCertificateSubject(
+            String certificateSubject
+    );
 }

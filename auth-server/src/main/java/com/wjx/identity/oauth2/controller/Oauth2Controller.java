@@ -10,11 +10,13 @@ import com.wjx.identity.oauth2.repository.ParRequestRepository;
 import com.wjx.identity.oauth2.service.PkceService;
 import com.wjx.identity.oauth2.service.ScopeValidator;
 import com.wjx.identity.security.jwt.JwtService;
+import com.wjx.identity.security.util.CertificateUtils;
 import com.wjx.identity.user.entity.*;
 import com.wjx.identity.user.repository.AuthorizeCodeRepository;
 import com.wjx.identity.user.repository.ClientRepository;
 import com.wjx.identity.user.repository.RefreshTokenRepository;
 import com.wjx.identity.user.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -159,18 +161,38 @@ public class Oauth2Controller {
 
     @PostMapping("/token")
     public OAuth2TokenResponse token(
-            @RequestBody OAuthTokenRequest request
+            @RequestBody OAuthTokenRequest request,
+            HttpServletRequest httpRequest
     ) throws NoSuchAlgorithmException {
+        String certificateSubject =
+                CertificateUtils.getClientCertificateSubject(
+                        httpRequest
+                );
+
+        if (certificateSubject == null) {
+            throw new BusinessException(
+                    "Client certificate required"
+            );
+        }
+
         ClientEntity client =
                 clientRepository
-                        .findByClientId(
-                                request.client_id()
+                        .findByCertificateSubject(
+                                certificateSubject
                         )
                         .orElseThrow(
                                 () -> new BusinessException(
-                                        "Client not found"
+                                        "Client certificate not trusted"
                                 )
                         );
+
+        if (!client.getClientId()
+                .equals(request.client_id())) {
+
+            throw new BusinessException(
+                    "Client id mismatch"
+            );
+        }
 
         if (!client.getClientSecret()
                 .equals(request.client_secret())) {

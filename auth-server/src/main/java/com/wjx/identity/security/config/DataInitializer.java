@@ -27,6 +27,9 @@ public class DataInitializer
                 "http://localhost:3000/callback"
         );
         client.setScope("openid");
+        client.setCertificateSubject(
+                "CN=identity-lab-client"
+        );
 
         clientRepository.save(client);
     }
