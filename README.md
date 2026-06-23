@@ -24,16 +24,16 @@ The goal is to gradually evolve this project from a simple JWT authentication sy
 ```mermaid
 flowchart LR
 
-    Client[Frontend / OAuth2 Client]
+    Client["Frontend / OAuth2 Client"]
 
-    AS[Identity Lab Authorization Server]
+    AS["Identity Lab Authorization Server"]
 
-    DB[(PostgreSQL)]
+    DB[("PostgreSQL")]
 
-    Client -->|PAR| AS
-    Client -->|Authorize| AS
-    Client -->|Token| AS
-    Client -->|UserInfo| AS
+    Client -->|"PAR"| AS
+    Client -->|"Authorize"| AS
+    Client -->|"Token"| AS
+    Client -->|"UserInfo"| AS
 
     AS --> DB
 ```
@@ -116,17 +116,17 @@ sequenceDiagram
 ```mermaid
 flowchart TD
 
-    A[/oauth2/token/]
+    A["/oauth2/token"]
 
-    A --> B[Access Token]
+    A --> B["Access Token"]
 
-    A --> C[ID Token]
+    A --> C["ID Token"]
 
-    B --> D[/oauth2/userinfo]
+    B --> D["/oauth2/userinfo"]
 
-    D --> E[User Claims]
+    D --> E["User Claims"]
 
-    C --> F[Identity Claims]
+    C --> F["Identity Claims"]
 ```
 
 ---
@@ -136,13 +136,18 @@ flowchart TD
 ```mermaid
 flowchart TD
 
-    A[PKCE Enforcement]
-    B[PAR]
-    C[JARM]
-    D[mTLS Client Authentication]
+    A["PKCE Enforcement"]
+
+    B["PAR"]
+
+    C["JARM"]
+
+    D["mTLS Client Authentication"]
 
     A --> B
+
     B --> C
+
     C --> D
 ```
 
@@ -241,6 +246,3 @@ Build a mini identity platform from scratch and gradually evolve it into an OAut
 * DPoP (Demonstration of Proof-of-Possession)
 * OAuth 2.0 Token Exchange
 * Spring Authorization Server Migration
-
-```
-```
