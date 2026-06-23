@@ -18,6 +18,7 @@
 ### OAuth2 & OIDC
 
 * OAuth2 Authorization Code Flow
+* Dynamic Client Registration
 * PKCE (RFC 7636)
 * Pushed Authorization Requests (PAR)
 * JWT Secured Authorization Response Mode (JARM)
@@ -66,6 +67,7 @@
 ### OAuth 2.0
 
 * [x] Client Registration
+* [x] Dynamic Client Registration
 * [x] Authorization Code Flow
 * [x] Authorization Code Persistence
 * [x] Access Token Issuance
@@ -102,8 +104,8 @@
 ## Future Work
 
 * OAuth 2.1
-* Dynamic Client Registration
 * DPoP (Demonstration of Proof-of-Possession)
+* OAuth 2.0 Token Exchange
 * Spring Authorization Server Migration
 
 ```

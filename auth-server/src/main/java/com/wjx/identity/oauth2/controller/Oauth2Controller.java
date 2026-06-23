@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URLEncoder;
@@ -52,6 +53,8 @@ public class Oauth2Controller {
     private final ParRequestRepository parRequestRepository;
 
     private final RefreshTokenRepository refreshTokenRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping("/authorize")
     public ResponseEntity<Void> authorize(
@@ -194,8 +197,10 @@ public class Oauth2Controller {
             );
         }
 
-        if (!client.getClientSecret()
-                .equals(request.client_secret())) {
+        if (!passwordEncoder.matches(
+                request.client_secret(),
+                client.getClientSecret()
+        )) {
 
             throw new BusinessException(
                     "Invalid client secret"

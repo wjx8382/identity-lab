@@ -1,6 +1,7 @@
 package com.wjx.identity.oauth2.controller;
 
 import com.wjx.identity.auth.dto.RevokeRequest;
+import com.wjx.identity.common.exception.BusinessException;
 import com.wjx.identity.user.entity.RefreshTokenEntity;
 import com.wjx.identity.user.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,9 @@ public class RevocationController {
                                 request.token()
                         )
                         .orElseThrow(
-                                () -> new RuntimeException("Token not found")
+                                () -> new BusinessException(
+                                        "Token not found"
+                                )
                         );
         token.setRevoked(true);
 

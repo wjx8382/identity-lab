@@ -26,7 +26,7 @@ public class AuthService {
         String username = request.username();
         Optional<UserEntity> existUser = userRepository.findByUsername(username);
         if (existUser.isPresent()) {
-            throw new RuntimeException("用户已存在");
+            throw new BusinessException("用户已存在");
         }
         UserEntity user = new UserEntity();
         user.setUsername(username);
