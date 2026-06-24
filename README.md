@@ -2,9 +2,14 @@
 
 Identity & Access Management (IAM) Learning Project
 
-A hands-on project for learning and implementing modern identity protocols and authorization standards, including JWT, OAuth 2.0, OpenID Connect (OIDC), and FAPI.
+A hands-on project for learning and implementing modern identity protocols and authorization standards, including JWT, OAuth 2.0, OpenID Connect (OIDC), FAPI, and Spring Authorization Server.
 
 The goal is to gradually evolve this project from a simple JWT authentication system into a standards-compliant Authorization Server.
+
+The project is divided into two phases:
+
+1. Build an OAuth2/OIDC/FAPI Authorization Server from scratch to understand the underlying protocols and implementation details.
+2. Study and compare Spring Authorization Server (SAS) with the custom implementation to understand production-grade authorization server design.
 
 ---
 
@@ -245,4 +250,32 @@ Build a mini identity platform from scratch and gradually evolve it into an OAut
 * OAuth 2.1
 * DPoP (Demonstration of Proof-of-Possession)
 * OAuth 2.0 Token Exchange
-* Spring Authorization Server Migration
+* Spring Authorization Server JDBC Persistence
+* Spring Authorization Server Production Deployment
+
+# Spring Authorization Server Migration
+
+After implementing OAuth2, OIDC, and FAPI features from scratch, this project started exploring Spring Authorization Server (SAS) to compare custom implementations with the official Spring Security solution.
+
+## Comparison
+
+| Identity Lab            | Spring Authorization Server    |
+| ----------------------- | ------------------------------ |
+| ClientEntity            | RegisteredClient               |
+| ClientRepository        | RegisteredClientRepository     |
+| AuthorizationCodeEntity | OAuth2Authorization            |
+| JwtService              | OAuth2TokenGenerator           |
+| DiscoveryController     | Built-in Discovery Endpoint    |
+| JwksController          | Built-in JWKS Endpoint         |
+| Custom OAuth2 Flow      | Standard OAuth2 Implementation |
+
+## Current Progress
+
+* [x] Spring Authorization Server Bootstrapping
+* [x] RegisteredClient Configuration
+* [x] Authorization Code Flow
+* [x] Token Endpoint
+* [x] OpenID Connect (OIDC) Enablement
+* [ ] JDBC Persistence
+* [ ] Custom User Integration
+* [ ] Production-grade Deployment
